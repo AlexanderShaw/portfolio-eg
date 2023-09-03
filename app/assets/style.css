@@ -1,0 +1,232 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(0, 1, 54);
+}
+.box {
+    border-bottom:10px solid rgb(2, 0, 25);
+    border-right:10px solid rgb(2, 0, 25);
+    margin: auto;
+    margin-top: 40px;
+    width: 90vw;
+    padding: 0 2.5vw;
+    background-color: rgb(252, 253, 255);
+    border-radius: 20px 30px 30px 30px;
+}
+a {
+    float:right;
+}
+label {
+    padding: 3px;
+}
+#head-title {
+    position: relative;
+    text-align: center;
+    width: 100%;
+}
+
+#head-img-div {
+    width:100%;
+    position: relative;
+    margin-top:30px;
+    text-align: center;
+}
+#head-img {
+    width:100%;
+    position: relative;
+    margin:0;
+    margin-top: 10px;
+    max-width: 100px;
+}
+#head-description {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.vis-input {
+    width: 26%;
+    margin: 0 3%;
+}
+
+#match-select-box {
+    border:1px solid black;
+    margin: auto;
+    margin-top: 40px;
+    width: 90vw;
+    padding: 0 2.5vw;
+}
+.title {
+    border-bottom: 1px solid black;
+    margin: auto;
+    width: 100%;
+    position: relative;
+    text-align: center;
+    padding: 6px 0px 6px 0px;
+}
+#map-select {
+    margin: auto;
+    position: relative;
+}
+#map-text {
+    margin-top: 20px;
+    text-align: center;
+}
+#map-dropdown {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    width: 150px;
+    text-align: center;
+    text-transform : capitalize;
+}
+.match-filter {
+    height: 120px;
+    margin: auto;
+}
+.team-box {
+    position: relative;
+    width: 35%;
+    margin-right: 5%;
+    display: inline-block;
+}
+.team-dropdown {
+    width: 100%;
+}
+.player-box {
+    display: inline-block;
+    width: 60%;
+    position: relative;
+}
+.player-dropdown {
+    width: 100%;
+}
+button {
+    border: 1px solid black;
+    height: 29px;
+    border-radius: 3px;
+    background-color: rgb(246, 247, 255);
+}
+#date-filter-div {
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#select-n-div {
+    position: relative;
+    width: 50%;
+    display: inline-block;
+}
+#select-all-matches-div {
+    position: relative;
+    width: 50%;
+    margin-left: 20px;
+    display: inline-block;
+}
+#add-data-div {
+    position: relative;
+    width: 50%;
+    margin-bottom: 5px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+.palette-box {
+    width:40%;
+    border:solid 1px black;
+    border-radius: 5px;
+    text-align: center;
+    display: inline-block;
+    margin: 15px;
+    vertical-align: top;
+}
+.scatter-dropdown {
+    width:20%;
+    margin:auto;
+    display: inline-block;
+    margin:2.5%;
+    text-align: center;
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+#match-table {
+    width: 100%; 
+    position:relative;
+    height: 430px;
+    text-align: center;
+    margin: auto;
+}
+
+#remove-pool-div {
+    display: inline-block;
+    width: 20%;
+    margin-bottom: 5px;
+}
+#import-export-id-div {
+    display: inline-block;
+    vertical-align: bottom;
+    width: 80%;
+}
+#id-float-div {
+    float: right;
+    vertical-align: bottom;
+}
+#import-id-button {
+    margin-right: 10px;
+}
+#all-player-set-div {
+    position: relative;
+    width: 100%;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+#all-filter-weapon {
+    width:200px;
+    text-align:center;
+    margin:auto;
+    margin-bottom: 30px;
+}
+
+#player-selector {
+    text-align: center;
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 30px;
+}
+#round-select-div {
+    text-align: center;
+}
+#round-number-div {
+    width: 100%;
+}
+#round-buy-type-div {
+    width: 30%;
+    margin: auto;
+}
+#round-time-div {
+    width: 75%;
+    margin: auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    text-align: center;
+}
+#net-dmg-div {
+    width: 75%;
+    margin: auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    text-align: center;
+}
+#graph-div {
+    width: 100%;
+}
+#visualization-option-div {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
