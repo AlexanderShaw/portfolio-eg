@@ -2154,4 +2154,4 @@ def scatter_plot(data, x, y, color, plot_type):
 
 # Runs the app
 if __name__ == "__main__":
-    app.run_server(debug=False, host="0.0.0.0", port=8000)
+    app.run_server(debug=False, port=8050)
