@@ -28,6 +28,8 @@ app = DashProxy(
     transforms=[MultiplexerTransform()],
 )
 
+server = app.server
+
 
 # Quick breakdown of dash: The app.layout is the static part,
 # and the functions after are what makes the page dynamic.
