@@ -22,7 +22,7 @@ from derive_scouting_features import damage_done_before_death, damage_taken
 from plot_csgo import *
 
 # multiplexer transfrom lets us have multiple callbacks target the same output.
-app = DashProxy(
+app = DashProxy(__name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
     prevent_initial_callbacks=False,
     transforms=[MultiplexerTransform()],
