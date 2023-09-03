@@ -93,7 +93,7 @@ app.layout = html.Div(
                         )
                     ],
                 ),
-                dcc.Markdown("[Google Doc for desired features, bugs, and issues](https://docs.google.com/document/d/1TcmBj-cCvV_HQe__5Mu_3QN-21V_VnEq-V_rNFIGHKY/edit?usp=sharing)"),
+                dcc.Markdown("*Portfolio edition (only test data and limited features)"),
                 # load visualization modal
                 dbc.Modal(
                     [
@@ -714,19 +714,6 @@ app.layout = html.Div(
                     - Highlight selected player in match  
             - Heatmaps
             - Drawing tools
-
-        Notes:  
-        Net dmg/dmg dealt is calculated 3 secs before death. Weapon filter filters kills only. 
-
-        To do:  
-        Clean up and document code
-        Fix inferno/anubis bug, no match data??  
-        Update anubis map  
-        Update data source  
-
-        Expansion ideas:  
-        https://dash.gallery/dash-soccer-analytics/  
-        https://dash.gallery/bball-player-explorer/  
         """
                         )
                     ],
