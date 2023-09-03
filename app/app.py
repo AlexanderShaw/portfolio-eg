@@ -10,6 +10,7 @@ import dash_daq as daq
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import json
+import gunicorn
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
