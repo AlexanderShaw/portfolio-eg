@@ -529,8 +529,8 @@ app.layout = html.Div(
                             id="graph-tool",
                             options=[
                                 "Victim/Killer connection",
-                                "HLTV link",
                                 "Highlight player",
+                                "HLTV link (not in demo)",
                             ],
                             clearable=False,
                             value="Victim/Killer connection",
@@ -1865,16 +1865,14 @@ def make_graph(
                         .loc[
                             (dfs[0].victim_name == selected_player[0])
                             & (dfs[0].match_id == selected_match)
-                        ]
-                        .index
+                        ]['index']
                     ),
                     list(
                         dfs[1]
                         .loc[
                             (dfs[0].attacker_name == selected_player[1])
                             & (dfs[1].match_id == selected_match)
-                        ]
-                        .index
+                        ]['index']
                     ),
                 ]
 
