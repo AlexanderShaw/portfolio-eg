@@ -178,8 +178,8 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
             else []
         )
 
-        selected_victim_index = list(set(selected_index) & set(df_victim.index))
-        selected_attacker_index = list(set(selected_index) & set(df_attacker.index))
+        selected_victim_index = list(set(selected_index) & set(list(df_victim['index'].values)))
+        selected_attacker_index = list(set(selected_index) & set(list(df_attacker['index'].values)))
 
         if "Deaths Scatter" in plot_types:
             # Add victim scatter trace
@@ -213,13 +213,14 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
             )
             # add highlight trace
             if "Victim/Killer connection" == graph_tool:
+                
                 for i in selected_victim_index:
                     fig.add_shape(
                         type="line",
-                        x0=float(df_victim.loc[[i]].attacker_x),
-                        y0=float(df_victim.loc[[i]].attacker_y),
-                        x1=float(df_victim.loc[[i]].victim_x),
-                        y1=float(df_victim.loc[[i]].victim_y),
+                        x0=float(df_victim[df_victim['index']==i].attacker_x),
+                        y0=float(df_victim[df_victim['index']==i].attacker_y),
+                        x1=float(df_victim[df_victim['index']==i].victim_x),
+                        y1=float(df_victim[df_victim['index']==i].victim_y),
                         line=dict(
                             color="rgb(46, 154, 255)",
                             width=2,
@@ -228,28 +229,28 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
                     )
                 fig.add_trace(
                     trace=go.Scatter(
-                        x=df_victim.loc[selected_victim_index].attacker_x,
-                        y=df_victim.loc[selected_victim_index].attacker_y,
+                        x=df_victim.loc[df_victim['index'].isin(selected_victim_index)].attacker_x,
+                        y=df_victim.loc[df_victim['index'].isin(selected_victim_index)].attacker_y,
                         hoverinfo="text",
                         text="name: "
-                        + df_victim.loc[selected_victim_index].attacker_name
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].attacker_name
                         + "<br>"
                         + "victim: "
-                        + df_victim.loc[selected_victim_index].victim_name
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].victim_name
                         + "<br>"
                         + "weapon: "
-                        + df_victim.loc[selected_victim_index].weapon
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].weapon
                         + "<br>"
                         + "seconds: "
-                        + df_victim.loc[selected_victim_index].true_round_time.apply(
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].true_round_time.apply(
                             lambda x: str(x)
                         )
                         + "<br>"
                         + "side:"
-                        + df_victim.loc[selected_victim_index].attacker_side
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].attacker_side
                         + "<br>"
                         + "dmg dealt:"
-                        + df_victim.damage_taken.apply(lambda x: str(x)),
+                        + df_victim.loc[df_victim['index'].isin(selected_victim_index)].damage_taken.apply(lambda x: str(x)),
                         mode="markers",
                         marker_symbol="circle",
                         marker_color="rgb(35, 201, 2)",
@@ -273,8 +274,8 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
             elif graph_tool == "Highlight player":
                 fig.add_trace(
                         trace=go.Scatter(
-                        x=df_victim.loc[df_victim.index.isin(highlight_index[0])]["victim_x"],
-                        y=df_victim.loc[df_victim.index.isin(highlight_index[0])]["victim_y"],
+                        x=df_victim.loc[df_victim['index'].isin(highlight_index[0])]["victim_x"],
+                        y=df_victim.loc[df_victim['index'].isin(highlight_index[0])]["victim_y"],
                         mode="markers",
                         hoverinfo='skip',
                         marker_symbol="x",
@@ -317,10 +318,10 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
                 for i in selected_attacker_index:
                     fig.add_shape(
                         type="line",
-                        x0=float(df_attacker.loc[[i]].attacker_x),
-                        y0=float(df_attacker.loc[[i]].attacker_y),
-                        x1=float(df_attacker.loc[[i]].victim_x),
-                        y1=float(df_attacker.loc[[i]].victim_y),
+                        x0=float(df_attacker[df_attacker['index'].isin(selected_attacker_index)].attacker_x),
+                        y0=float(df_attacker[df_attacker['index'].isin(selected_attacker_index)].attacker_y),
+                        x1=float(df_attacker[df_attacker['index'].isin(selected_attacker_index)].victim_x),
+                        y1=float(df_attacker[df_attacker['index'].isin(selected_attacker_index)].victim_y),
                         line=dict(
                             color="rgb(46, 154, 255)",
                             width=2,
@@ -329,28 +330,28 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
                     )
                 fig.add_trace(
                     trace=go.Scatter(
-                        x=df_attacker.loc[selected_attacker_index].victim_x,
-                        y=df_attacker.loc[selected_attacker_index].victim_y,
+                        x=df_attacker[df_attacker['index'].isin(selected_attacker_index)].victim_x,
+                        y=df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].victim_y,
                         hoverinfo="text",
                         text="name: "
-                        + df_attacker.loc[selected_attacker_index].victim_name
+                        + df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].victim_name
                         + "<br>"
                         + "attacker: "
-                        + df_attacker.loc[selected_attacker_index].attacker_name
+                        + df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].attacker_name
                         + "<br>"
                         + "killed with: "
-                        + df_attacker.loc[selected_attacker_index].weapon
+                        + df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].weapon
                         + "<br>"
                         + "seconds: "
-                        + df_attacker.loc[selected_attacker_index].true_round_time.apply(
+                        + df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].true_round_time.apply(
                             lambda x: str(x)
                         )
                         + "<br>"
                         + "side:"
-                        + df_attacker.loc[selected_attacker_index].victim_side
+                        + df_attacker.loc[df_attacker['index'].isin(selected_attacker_index)].victim_side
                         + "<br>"
                         + "net dmg:"
-                        + df_attacker.net_dmg.apply(lambda x: str(x)),
+                        + df_attacker[df_attacker['index'].isin(selected_attacker_index)].net_dmg.apply(lambda x: str(x)),
                         mode="markers",
                         marker_symbol="x",
                         marker_color="rgb(255,0,0)",
@@ -371,13 +372,14 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
                         webbrowser.open_new(df_attacker.loc[click_data["points"][0]["customdata"]].hltv_link)
                     except:
                         pass
-
             elif graph_tool == "Highlight player":
                 # add highlight trace
+                print('highlight index:' + str(highlight_index))
+                print('attacker x:' + str(df_attacker.loc[df_attacker['index'].isin(highlight_index[1])]["attacker_x"]))
                 fig.add_trace(
                         trace=go.Scatter(
-                        x=df_attacker.loc[df_attacker.index.isin(highlight_index[1])]["attacker_x"],
-                        y=df_attacker.loc[df_attacker.index.isin(highlight_index[1])]["attacker_y"],
+                        x=df_attacker.loc[df_attacker['index'].isin(highlight_index[1])]["attacker_x"],
+                        y=df_attacker.loc[df_attacker['index'].isin(highlight_index[1])]["attacker_y"],
                         mode="markers",
                         hoverinfo='skip',
                         marker_symbol="circle",

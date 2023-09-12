@@ -1850,13 +1850,13 @@ def make_graph(
             if click_data is not None:
                 selected_index = int(click_data["points"][0]["customdata"])
                 selected_match = [
-                    dff.loc[[selected_index]].match_id.values[0] for dff in dfs
+                    dff.loc[dff['index'] == selected_index].match_id.values[0] for dff in dfs
                 ]
                 selected_match = [x for x in selected_match if x is not None]
                 selected_match = selected_match[0]
                 selected_player = [
-                    dfs[0].loc[[selected_index]].victim_name.values[0],
-                    dfs[1].loc[[selected_index]].attacker_name.values[0],
+                    dfs[0].loc[dfs[0]['index'] == selected_index].victim_name.values[0],
+                    dfs[1].loc[dfs[1]['index'] == selected_index].attacker_name.values[0],
                 ]
 
                 highlight_indices = [
