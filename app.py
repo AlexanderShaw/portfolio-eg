@@ -24,7 +24,7 @@ from plot_csgo import *
 # multiplexer transfrom lets us have multiple callbacks target the same output.
 app = DashProxy(__name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
-    prevent_initial_callbacks=False,
+    prevent_initial_callbacks=True,
     transforms=[MultiplexerTransform()],
 )
 
@@ -129,7 +129,7 @@ app.layout = html.Div(
                                 ),
                                 html.Div(
                                     [
-                                        html.H5("Enter info to save visualization:"),
+                                        html.H5("Enter info to save visualization (disabled):"),
                                         dcc.Input(
                                             id="vis-name",
                                             className="vis-input",
@@ -183,14 +183,14 @@ app.layout = html.Div(
                             id="map-dropdown",
                             options=[
                                 "ancient",
-                                "inferno",
-                                "mirage",
-                                "nuke",
-                                "overpass",
-                                "anubis",
-                                "vertigo",
+                                "inferno (not in demo)",
+                                "mirage (not in demo)",
+                                "nuke (not in demo)",
+                                "overpass (not in demo)",
+                                "anubis (not in demo)",
+                                "vertigo (not in demo)",
                             ],
-                            value="ancient",
+                            value=None,
                             clearable=False,
                         ),
                     ],
@@ -743,35 +743,36 @@ app.layout = html.Div(
 )
 def fill_load_table(n1, n2, n3):
     time.sleep(0.5)
-    url_object = URL.create(
-        "postgresql+psycopg2",
-        host=os.environ["DB_HOST"],
-        database="eg_gaming_dev",
-        port=os.environ["DB_PORT"],
-        username=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-    )
+    # url_object = URL.create(
+    #     "postgresql+psycopg2",
+    #     host=os.environ["DB_HOST"],
+    #     database="eg_gaming_dev",
+    #     port=os.environ["DB_PORT"],
+    #     username=os.environ["DB_USER"],
+    #     password=os.environ["DB_PASSWORD"],
+    # )
 
-    engine = create_engine(url_object)
+    # engine = create_engine(url_object)
 
-    fill_load_table_query = """ SELECT * FROM CSGO_DATA_VIS.SAVED_VIS """
+    # fill_load_table_query = """ SELECT * FROM CSGO_DATA_VIS.SAVED_VIS """
 
-    try:
-        output = engine.execute(fill_load_table_query)
-        df = pd.DataFrame(output.fetchall())
-    except:
-        print("load table pull failed")
+    # try:
+    #     output = engine.execute(fill_load_table_query)
+    #     df = pd.DataFrame(output.fetchall())
+    # except:
+    #     print("load table pull failed")
 
-    rename_cols = {
-        "date_created": "Date Created",
-        "name": "Name",
-        "created_by": "Created by",
-        "url": "Notes",
-    }
-    df.rename(columns=rename_cols, inplace=True)
-
-    # makes link clickable
-    df["Notes"] = df["Notes"].apply(lambda x: "[" + x + "]" + "(" + x + ")")
+    # rename_cols = {
+    #     "date_created": "Date Created",
+    #     "name": "Name",
+    #     "created_by": "Created by",
+    #     "url": "Notes",
+    # }
+    # df.rename(columns=rename_cols, inplace=True)
+    df = pd.DataFrame({"Date Created" : ["07/04/1776"],
+                        "Name" : ["Some visualization"],
+                        "Created by" : ["Alex"],
+                        "Notes" : ["someurl.com"]})
 
     return (
         df[["Date Created", "Name", "Created by", "Notes"]].to_dict("records"),
@@ -823,7 +824,7 @@ def toggle_modal(n1, n2, n3, is_open):
     Input("load-vis-button", "n_clicks"),
 )
 def load_vis(selected, data, n):
-    if selected != [] and ctx.triggered_id == "load-vis-button":
+    if selected != [] and ctx.triggered_id == "load-vis-button" and ctx.triggered_id != "load-vis-button": #add for disable
         df = pd.read_json(data)
         settings = df.loc[selected[0]]["settings"]
         return (
@@ -889,7 +890,7 @@ def save_vis(
     kh_size,
     n_clicks,
 ):
-    if n_clicks > 0:
+    if n_clicks > 0 and n_clicks < 0: # added this line to disable
         date_created = date.today()
 
         settings = {
@@ -962,7 +963,7 @@ def save_vis(
     Input("delete-vis-button", "n_clicks"),
 )
 def delete_vis(selected, data, n1):
-    if selected != [] and ctx.triggered_id == "delete-vis-button":
+    if selected != [] and ctx.triggered_id == "delete-vis-button" and ctx.triggered_id != "delete-vis-button": #add for disable
         df = pd.read_json(data)
         to_delete = df.loc[selected[0]]
 
@@ -1005,35 +1006,36 @@ def delete_vis(selected, data, n1):
 def display_map_matches(
     map_string, selected_teams, selected_players, start_date, end_date
 ):
+    time.sleep(0.5)
     # sqlalchemy engine to make SQL fetches
-    url_object = URL.create(
-        "postgresql+psycopg2",
-        host=os.environ["DB_HOST"],
-        database=os.environ["DB_NAME"],
-        port=os.environ["DB_PORT"],
-        username=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-    )
+    # url_object = URL.create(
+    #     "postgresql+psycopg2",
+    #     host=os.environ["DB_HOST"],
+    #     database=os.environ["DB_NAME"],
+    #     port=os.environ["DB_PORT"],
+    #     username=os.environ["DB_USER"],
+    #     password=os.environ["DB_PASSWORD"],
+    # )
 
-    engine = create_engine(url_object)
+    # engine = create_engine(url_object)
 
-    match_table_query = """ SELECT MATCH_ID,
-                                MATCH_DATE,
-                                WINNING_TEAM,
-                                LOSING_TEAM,
-                                SCORE,
-                                WINNING_T_WINS,
-                                WINNING_CT_WINS,
-                                LOSING_T_WINS,
-                                LOSING_CT_WINS,
-                                WINNING_PLAYERS,
-                                LOSING_PLAYERS
-                            FROM CSGO_DSA.MATCH_INFO
-                            WHERE MAP_NAME ILIKE '%%{map_name}%%'
-                            ORDER BY MATCH_DATE DESC
-    """.format(
-        map_name=map_string
-    )
+    # match_table_query = """ SELECT MATCH_ID,
+    #                             MATCH_DATE,
+    #                             WINNING_TEAM,
+    #                             LOSING_TEAM,
+    #                             SCORE,
+    #                             WINNING_T_WINS,
+    #                             WINNING_CT_WINS,
+    #                             LOSING_T_WINS,
+    #                             LOSING_CT_WINS,
+    #                             WINNING_PLAYERS,
+    #                             LOSING_PLAYERS
+    #                         FROM CSGO_DSA.MATCH_INFO
+    #                         WHERE MAP_NAME ILIKE '%%{map_name}%%'
+    #                         ORDER BY MATCH_DATE DESC
+    # """.format(
+    #     map_name=map_string
+    # )
     read_cols = [
         "match_id",
         "match_date",
@@ -1049,19 +1051,53 @@ def display_map_matches(
     ]
     rename_cols = {x: y for x, y in zip(read_cols, display_cols)}
 
-    # Building match dataframe
     df = pd.DataFrame(columns=read_cols)
 
-    try:
-        output = engine.execute(match_table_query)
-        df = pd.DataFrame(output.fetchall())
-    except SQLAlchemyError as e:
-        print(e)
+    if map_string == 'ancient':
+        data = pd.read_csv("data/game_round.csv")
+        data = data[data['map_name'] == 'de_ancient']
+        frame_players = pd.read_csv("data/frame_player.csv")
+        for match_id in data['match_id'].unique():
+            match_date = data[data['match_id'] == match_id]['created_at'].apply(lambda x: x[:10]).iloc[0]
+            winning_team = data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False).index[0]
+            losing_team = data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False).index[1]
+            score = str(data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False)[0]) + "-" + str(data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False)[1])
+            round_wins = data[data['match_id'] == match_id][['winning_team', 'winning_side']].value_counts()
+            winning_t_wins = round_wins[winning_team]['T']
+            winning_ct_wins = round_wins[winning_team]['CT']
+            losing_t_wins = round_wins[losing_team]['T']
+            losing_ct_wins = (round_wins[losing_team]['CT'] if len(round_wins[losing_team]) == 2 else 0)
+            winning_players = frame_players[(frame_players['team']==winning_team) & (frame_players.match_id == match_id)]['name'].unique()
+            string = ''
+            for player in winning_players:
+                player = player.replace('nouns.', '')
+                player = player.replace('WC', '')
+                string += str(player) + ", "
+            string = string[:-2]
+            winning_players = string
+            losing_players = frame_players[(frame_players['team']==losing_team) & (frame_players.match_id == match_id)]['name'].unique()
+            string = ''
+            for player in losing_players:
+                player = player.replace('nouns.', '')
+                player = player.replace('WC', '')
+                string += str(player) + ", "
+            string = string[:-2]
+            losing_players = string
+            df.loc[len(df)] = [match_id, match_date, winning_team, losing_team, score, winning_t_wins, winning_ct_wins, losing_t_wins, losing_ct_wins, winning_players, losing_players]
+
+    # # Building match dataframe
+    # df = pd.DataFrame(columns=read_cols)
+
+    # try:
+    #     output = engine.execute(match_table_query)
+    #     df = pd.DataFrame(output.fetchall())
+    # except SQLAlchemyError as e:
+    #     print(e)
 
     df.rename(columns=rename_cols, inplace=True)
 
-    # drop dups because ties mess up the SQL code
-    df.drop_duplicates(subset=["id"], inplace=True)
+    # # drop dups because ties mess up the SQL code
+    # df.drop_duplicates(subset=["id"], inplace=True)
 
     teams = list(set(df.winners.unique()) | set(df.losers.unique()))
     winning_players = [
