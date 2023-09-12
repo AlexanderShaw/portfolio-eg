@@ -99,7 +99,7 @@ def plot(dfs, map_string, plot_types, selected_data, click_data, graph_tool, hig
     df_victim = dfs[0].copy()
     df_attacker = dfs[1].copy()
     # Add image
-    I = Image.open("app/map_images/de_" + map_string + "_radar.jpg")
+    I = Image.open("map_images/de_" + map_string + "_radar.jpg")
     w, h = I.size
     fig = go.Figure()
 

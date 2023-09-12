@@ -40,6 +40,7 @@ server = app.server
 # Some variables to be used later
 display_cols = [
     "id",
+    "series",
     "date",
     "winners",
     "losers",
@@ -1038,6 +1039,7 @@ def display_map_matches(
     # )
     read_cols = [
         "match_id",
+        'series',
         "match_date",
         "winning_team",
         "losing_team",
@@ -1058,6 +1060,7 @@ def display_map_matches(
         data = data[data['map_name'] == 'de_ancient']
         frame_players = pd.read_csv("data/frame_player.csv")
         for match_id in data['match_id'].unique():
+            series = data[data['match_id'] == match_id]['series'].iloc[0]
             match_date = data[data['match_id'] == match_id]['created_at'].apply(lambda x: x[:10]).iloc[0]
             winning_team = data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False).index[0]
             losing_team = data[data['match_id'] == match_id].winning_team.value_counts().sort_values(ascending=False).index[1]
@@ -1083,7 +1086,7 @@ def display_map_matches(
                 string += str(player) + ", "
             string = string[:-2]
             losing_players = string
-            df.loc[len(df)] = [match_id, match_date, winning_team, losing_team, score, winning_t_wins, winning_ct_wins, losing_t_wins, losing_ct_wins, winning_players, losing_players]
+            df.loc[len(df)] = [match_id, series, match_date, winning_team, losing_team, score, winning_t_wins, winning_ct_wins, losing_t_wins, losing_ct_wins, winning_players, losing_players]
 
     # # Building match dataframe
     # df = pd.DataFrame(columns=read_cols)
@@ -1273,16 +1276,16 @@ def func(data, map, n_clicks):
 )
 def show_teams(data, load_data, n1):
     # sqlalchemy engine to make SQL fetches
-    url_object = URL.create(
-        "postgresql+psycopg2",
-        host=os.environ["DB_HOST"],
-        database=os.environ["DB_NAME"],
-        port=os.environ["DB_PORT"],
-        username=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-    )
+    # url_object = URL.create(
+    #     "postgresql+psycopg2",
+    #     host=os.environ["DB_HOST"],
+    #     database=os.environ["DB_NAME"],
+    #     port=os.environ["DB_PORT"],
+    #     username=os.environ["DB_USER"],
+    #     password=os.environ["DB_PASSWORD"],
+    # )
 
-    engine = create_engine(url_object)
+    # engine = create_engine(url_object)
 
     # building the dataframes
     kill_df = pd.DataFrame()
@@ -1312,57 +1315,69 @@ def show_teams(data, load_data, n1):
 
     if data is not None:
         match_ids = [data[i]["id"] for i in range(len(data))]
+        serieses = [data[i]["series"] for i in range(len(data))]
 
-        match_query_string = "("
-        for i in match_ids:
-            match_query_string += "'" + i + "',"
-        match_query_string = match_query_string[:-1]
-        match_query_string += ")"
-        kill_table_query = """ SELECT *
-                            FROM CSGO_DSA.HLTV_KILL
-                            WHERE MATCH_ID IN {string}
-                            ORDER BY MATCH_ID, TICK ASC
-        """.format(
-            string=match_query_string
-        )
-        round_table_query = """ SELECT *
-                            FROM CSGO_DSA.HLTV_GAME_ROUND
-                            WHERE MATCH_ID IN {string}
-                            ORDER BY MATCH_ID
-        """.format(
-            string=match_query_string
-        )
-        damage_table_query = """ SELECT *
-                            FROM CSGO_DSA.HLTV_DAMAGE
-                            WHERE MATCH_ID IN {string}
-                            ORDER BY MATCH_ID
-        """.format(
-            string=match_query_string
-        )
-        match_table_query = """ SELECT MATCH_URN as ID,
-                            extra_metadata as metadata
-                            FROM CSGO_DSA.MATCH_GAME
-                            WHERE MATCH_URN IN {string}
-                            ORDER BY ID
-        """.format(
-            string=match_query_string
-        )
+        kill_df_big = pd.read_csv('data/kills.csv')
+        for id, series in zip(match_ids, serieses):
+            kill_df = pd.concat([kill_df, kill_df_big[(kill_df_big.match_id == id) & (kill_df_big.series == series)]], axis=0)
+        round_df_big = pd.read_csv('data/game_round.csv')
+        for id, series in zip(match_ids, serieses):
+            round_df = pd.concat([round_df, round_df_big[(round_df_big.match_id == id) & (round_df_big.series == series)]], axis=0)
+        damage_df_big = pd.read_csv('data/damage.csv')
+        for id, series in zip(match_ids, serieses):
+            damage_df = pd.concat([damage_df, damage_df_big[(damage_df_big.match_id == id) & (damage_df_big.series == series)]], axis=0)
+        
 
-        if match_ids != []:
-            try:
-                output = engine.execute(kill_table_query)
-                kill_df = pd.DataFrame(output.fetchall())
-                output = engine.execute(round_table_query)
-                round_df = pd.DataFrame(output.fetchall())
-                output = engine.execute(damage_table_query)
-                damage_df = pd.DataFrame(output.fetchall())
-                output = engine.execute(match_table_query)
-                match_df = pd.DataFrame(output.fetchall())
-            except SQLAlchemyError as e:
-                print(e)
-                print("kill/round/damage table pull failed")
+        # match_query_string = "("
+        # for i in match_ids:
+        #     match_query_string += "'" + i + "',"
+        # match_query_string = match_query_string[:-1]
+        # match_query_string += ")"
+        # kill_table_query = """ SELECT *
+        #                     FROM CSGO_DSA.HLTV_KILL
+        #                     WHERE MATCH_ID IN {string}
+        #                     ORDER BY MATCH_ID, TICK ASC
+        # """.format(
+        #     string=match_query_string
+        # )
+        # round_table_query = """ SELECT *
+        #                     FROM CSGO_DSA.HLTV_GAME_ROUND
+        #                     WHERE MATCH_ID IN {string}
+        #                     ORDER BY MATCH_ID
+        # """.format(
+        #     string=match_query_string
+        # )
+        # damage_table_query = """ SELECT *
+        #                     FROM CSGO_DSA.HLTV_DAMAGE
+        #                     WHERE MATCH_ID IN {string}
+        #                     ORDER BY MATCH_ID
+        # """.format(
+        #     string=match_query_string
+        # )
+        # match_table_query = """ SELECT MATCH_URN as ID,
+        #                     extra_metadata as metadata
+        #                     FROM CSGO_DSA.MATCH_GAME
+        #                     WHERE MATCH_URN IN {string}
+        #                     ORDER BY ID
+        # """.format(
+        #     string=match_query_string
+        # )
 
-        if not kill_df.empty and not round_df.empty and not match_df.empty:
+        # if match_ids != []:
+        #     try:
+        #         output = engine.execute(kill_table_query)
+        #         kill_df = pd.DataFrame(output.fetchall())
+        #         output = engine.execute(round_table_query)
+        #         round_df = pd.DataFrame(output.fetchall())
+        #         output = engine.execute(damage_table_query)
+        #         damage_df = pd.DataFrame(output.fetchall())
+        #         output = engine.execute(match_table_query)
+        #         match_df = pd.DataFrame(output.fetchall())
+        #     except SQLAlchemyError as e:
+        #         print(e)
+        #         print("kill/round/damage table pull failed")
+
+        if not kill_df.empty and not round_df.empty:
             # add some features from scripts in derive_scouting_features
             kill_df["damage_done_before_death"] = kill_df.apply(
                 lambda x: damage_done_before_death(x, damage_df), axis=1
@@ -1375,13 +1390,13 @@ def show_teams(data, load_data, n1):
             )
 
             # add hltv link for each kill
-            id_to_hltv = {
-                x: find_link(y)
-                for x, y in zip(list(match_df.id), [x['source_match_filename'] for x in match_df.metadata])
-            }
+            # id_to_hltv = {
+            #     x: find_link(y)
+            #     for x, y in zip(list(match_df.id), [x['source_match_filename'] for x in match_df.metadata])
+            # }
             #use this since seems there's a bug in the code
             kill_df = kill_df.dropna()
-            kill_df["hltv_link"] = [id_to_hltv[x] for x in kill_df["match_id"]]
+            #  kill_df["hltv_link"] = [id_to_hltv[x] for x in kill_df["match_id"]]
             teams = list(kill_df.attacker_team.unique())
             
             def true_round_time(x):
@@ -1947,7 +1962,7 @@ def make_graph(
                 )
             )
 
-    I_dim = Image.open("app/map_images/de_" + map_string + "_radar.jpg")
+    I_dim = Image.open("map_images/de_" + map_string + "_radar.jpg")
     w, h = I_dim.size
 
     # update with palette options
@@ -2179,4 +2194,4 @@ def scatter_plot(data, x, y, color, plot_type):
 
 # Runs the app
 if __name__ == "__main__":
-    app.run_server(debug=False, port=8050)
+    app.run_server(debug=True, port=8050)
